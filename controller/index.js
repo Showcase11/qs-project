@@ -48,14 +48,11 @@ module.exports.userInfo = async function (req, res) {
     }
 }
 
-
-
 module.exports.userQuery = async function (req, res) {
     try {
         const { firstname, lastname, mobile, email, query, file } = req.body
-       
+        console.log('from query body', req.body)
         if (!firstname || !email) {
-           
             return res.status(400).json({
                 status: 'please enter all the detail'
             })
@@ -65,32 +62,39 @@ module.exports.userQuery = async function (req, res) {
                 status: 'please enter the correct number'
             })
         }
+
         if (email) {
-            const result = await userQueryDataBase.find({email})
-          
-            if(result.length > 0) return res.status(400).json({
-                status:"Email is already register"
+            const result = await userQueryDataBase.find({ email })
+            console.log('from email', result)
+            if (result.length > 0) return res.status(400).json({
+                status: "Email is already register"
             })
         }
+
         const fileUrlLink = file && await cloudinary.uploader.upload(file)
-        const result = await userQueryDataBase.create({
+        const user = userQueryDataBase({
             name: lastname ? `${firstname.toLowerCase()} ${lastname.toLowerCase()}` : firstname.toLowerCase(),
             email: email.toLowerCase(),
             mobile,
             query,
             file: file ? fileUrlLink.url : 'N/A'
         })
-        console.log(result)
+
+        const result = await user.save()
         if (result) {
             res.status(200).json({
                 status: 'query added'
             })
         }
+
     } catch (err) {
-        const data = err.keyPattern
-        console.log('erro', err.message)
+        /*  const data = err.keyPattern
+         console.log(data)
+         console.log('error', err.message)
+         console.log('obj',Object?.keys(data)) */
+        console.log(err)
         res.status(400).json({
-            status: `${Object.keys(data)[0]} is already register`
+            status: `email is already register`
         })
     }
 }
