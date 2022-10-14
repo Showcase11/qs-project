@@ -6,6 +6,11 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon index.js",
+    "client-install": "npm i --legacy-peer-deps --prefix client",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run build --prefix client"
   },
   "author": "",
   "license": "ISC",
